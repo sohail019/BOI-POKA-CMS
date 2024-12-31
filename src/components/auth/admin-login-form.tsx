@@ -4,8 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AdminLoginSchema } from "@/schemas/auth/admin-schema";
 import axios from "axios";
 import { z } from "zod";
+import { useDispatch } from "react-redux";
 
 const AdminLoginForm = () => {
+    const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -21,7 +23,7 @@ const AdminLoginForm = () => {
       const { token } = response.data;
 
       // Store the token in localStorage
-      localStorage.setItem("token", token);
+      dispatch(login(token));
       console.log("Login successful");
 
       window.location.href = "/dashboard";

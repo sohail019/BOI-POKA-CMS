@@ -1,57 +1,62 @@
-// import FormPage from '@/pages/form';
-import NotFound from '@/pages/not-found';
-import DashboardLayout from '@/components/layouts/dashboard-layout';
-import { Suspense, lazy } from 'react';
-import { Navigate, Outlet, useRoutes } from 'react-router-dom';
+import { Suspense, lazy } from "react";
+import { Navigate, Outlet, useRoutes } from "react-router-dom";
+import NotFound from "@/pages/not-found";
+import DashboardLayout from "@/components/layouts/dashboard-layout";
 
-// const DashboardLayout = lazy(
-//   () => import('@/components/layout/dashboard-layout')
-// );
-const AdminLoginPage = lazy(() => import('@/pages/auth/admin-login'));
-const DashboardPage = lazy(() => import('@/pages/dashboard'));
+// Lazy load components
+const AdminLoginPage = lazy(() => import("@/pages/auth/admin-login"));
+const DashboardPage = lazy(() => import("@/pages/dashboard"));
 // const StudentPage = lazy(() => import('@/pages/students'));
-// const StudentDetailPage = lazy(
-//   () => import('@/pages/students/StudentDetailPage')
-// );
+// const StudentDetailPage = lazy(() => import('@/pages/students/StudentDetailPage'));
 
 export default function AppRouter() {
+  // Dashboard routes with lazy-loaded pages
   const dashboardRoutes = [
     {
-      path: '/',
+      path: "/",
       element: (
         <DashboardLayout>
-          <Suspense>
+          <Suspense fallback={<div>Loading...</div>}>
             <Outlet />
           </Suspense>
         </DashboardLayout>
       ),
       children: [
         {
-          element: <DashboardPage />,
-          index: true
+          path: "dashboard",
+          element: (
+            <Suspense fallback={<div>Loading Dashboard...</div>}>
+              <DashboardPage />
+            </Suspense>
+          ),
         },
-      ]
-    }
+      ],
+    },
   ];
 
-const publicRoutes = [
+  // Public routes
+  const publicRoutes = [
     {
-        path: '/admin-login',
-        element: <AdminLoginPage />,
-        index: true,
+      path: "/admin-login",
+      element: (
+        <Suspense fallback={<div>Loading Login...</div>}>
+          <AdminLoginPage />
+        </Suspense>
+      ),
+      index: true,
     },
     {
-      path: '/404',
-      element: <NotFound />
+      path: "/404",
+      element: <NotFound />,
     },
     {
-      path: '*',
-      element: <Navigate to="/404" replace />
-    }
-];
+      path: "*",
+      element: <Navigate to="/404" replace />,
+    },
+  ];
 
+  // Combine dashboard and public routes and pass them to `useRoutes`
   const routes = useRoutes([...dashboardRoutes, ...publicRoutes]);
-  // const routes = useRoutes([ ...publicRoutes]);
 
   return routes;
 }
